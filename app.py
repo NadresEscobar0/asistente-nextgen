@@ -8,39 +8,18 @@ st.set_page_config(page_title="VictorIA Nexus - Asistente Académico Adaptativo"
 st.markdown("""
     <style>
     .block-container {
-        padding-bottom: 70px !important;
+        padding-bottom: 80px !important; /* Espacio para el panel inferior */
     }
-    .stForm {
-        position: fixed !important;
+    .fixed-form-container {
+        position: fixed;
         left: 0;
         right: 0;
         bottom: 36px;
-        width: 100vw !important;
         background: #f8f9fa;
-        padding: 0.3rem 0.7rem 0.3rem 0.7rem;
+        border-top: 2px solid #e3e3e3;
         box-shadow: 0 -2px 10px rgba(0,0,0,0.07);
         z-index: 9999;
-        border-top: 2px solid #e3e3e3;
-        margin: 0 !important;
-    }
-    .stForm textarea {
-        min-height: 36px;
-        max-height: 70px;
-        font-size: 1rem;
-        padding: 0.3em;
-    }
-    .stForm button {
-        width: 80px;
-        height: 36px;
-        background: #2b7de9;
-        color: white;
-        font-weight: bold;
-        border-radius: 6px;
-        font-size: 1rem;
-        border: none;
-        margin-left: 0.5rem;
-        margin-top: 0.1rem;
-        margin-bottom: 0.1rem;
+        padding: 0.2em 0.7em 0.2em 0.7em;
     }
     .footer-credito {
         position: fixed;
@@ -128,19 +107,19 @@ if st.session_state.historial:
 else:
     st.info("¡Haz tu primera pregunta académica abajo para comenzar!")
 
-# --- PANEL INFERIOR FIJO Y FUNCIONAL, COMPACTO ---
+# --- PANEL INFERIOR FIJO Y FUNCIONAL, ULTRA-COMPACTO ---
+st.markdown('<div class="fixed-form-container">', unsafe_allow_html=True)
 with st.form(key="formulario_pregunta", clear_on_submit=True):
-    col1, col2 = st.columns([7, 1])
+    col1, col2 = st.columns([8, 1])
     with col1:
-        pregunta = st.text_area(
-            "",
-            height=36,
+        pregunta = st.text_input(
+            "Haz tu pregunta académica aquí:",
             max_chars=500,
             key="pregunta_usuario"
         )
     with col2:
-        st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)  # Espacio para alinear botón
         enviar = st.form_submit_button("Preguntar")
+st.markdown('</div>', unsafe_allow_html=True)
 
 if enviar and pregunta.strip():
     pregunta_baja = pregunta.lower()
