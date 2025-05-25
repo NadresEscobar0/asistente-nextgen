@@ -77,14 +77,20 @@ def construir_prompt(pregunta, estilo):
         detalle = "Sugiere actividades prácticas y ejemplos kinestésicos."
     return f"{base} {detalle} Pregunta: {pregunta}"
 
-# 7. Historial organizado y visualmente limpio
+# 7. Historial organizado y visualmente limpio, con alto contraste
 if st.session_state.historial:
     st.markdown("### Historial de Interacciones")
     for i, entrada in enumerate(st.session_state.historial[::-1], 1):
         st.markdown(f"""
-        <div style="background-color:#f0f4fa; border-radius:10px; padding:1em; margin-bottom:0.5em;">
-            <b><span style="color:#2b7de9;">{i}. Tú:</span></b> {entrada['pregunta']}<br>
-            <b><span style="color:#1b4a7a;">MentorIA:</span></b> {entrada['respuesta']}
+        <div style="
+            background-color:#1b4a7a;
+            border-radius:10px;
+            padding:1em;
+            margin-bottom:0.5em;
+            color:#ffffff;
+            ">
+            <b><span style="color:#FFD700;">{i}. Tú:</span></b> {entrada['pregunta']}<br>
+            <b><span style="color:#87CEEB;">MentorIA:</span></b> {entrada['respuesta']}
         </div>
         """, unsafe_allow_html=True)
 else:
@@ -116,7 +122,8 @@ if enviar:
             respuesta = f"Error al generar respuesta: {e}"
     st.session_state.historial.append({"pregunta": pregunta, "respuesta": respuesta})
 
-# ¡Listo! El historial está organizado y la experiencia es de asistente académico.
+# ¡Listo! El historial está organizado, con colores contrastantes y la experiencia es de asistente académico.
+
 
 
 
