@@ -1,6 +1,28 @@
 import streamlit as st
 import google.generativeai as genai
 
+# --- CSS para fijar la caja y el botón al fondo ---
+st.markdown("""
+    <style>
+    .fixed-bottom-container {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #fafafa;
+        padding: 1rem 1rem 0.5rem 1rem;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        z-index: 100;
+    }
+    .fixed-bottom-container textarea {
+        width: 100% !important;
+        min-height: 50px;
+        max-height: 120px;
+        resize: vertical;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 # Configuración de la página
 st.set_page_config(page_title="Asistente Virtual", page_icon="🤖")
 
@@ -26,14 +48,6 @@ estilo = st.selectbox(
     ("Visual", "Auditivo", "Kinestésico")
 )
 
-# Caja de texto expandible (como WhatsApp)
-pregunta = st.text_area(
-    "Escribe tu pregunta aquí:",
-    height=80,
-    max_chars=500,
-    key="pregunta_usuario"
-)
-
 def construir_prompt(pregunta, estilo):
     base = (
         "Primero, responde de forma clara y concreta con los datos más importantes. "
@@ -47,8 +61,19 @@ def construir_prompt(pregunta, estilo):
         detalle = "Sugiere actividades prácticas y ejemplos kinestésicos."
     return f"{base} {detalle} Pregunta: {pregunta}"
 
-# Botón único de preguntar
-if st.button("Preguntar"):
+# Contenedor fijo al fondo de la pantalla
+st.markdown('<div class="fixed-bottom-container">', unsafe_allow_html=True)
+pregunta = st.text_area(
+    "Escribe tu pregunta aquí:",
+    height=60,
+    max_chars=500,
+    key="pregunta_usuario"
+)
+enviar = st.button("Preguntar")
+st.markdown('</div>', unsafe_allow_html=True)
+
+# Lógica para procesar la pregunta
+if enviar:
     if not pregunta.strip():
         st.warning("Por favor, escribe una pregunta.")
     else:
@@ -59,6 +84,7 @@ if st.button("Preguntar"):
             st.write(respuesta.text)
         except Exception as e:
             st.error(f"Error al generar respuesta: {e}")
+
 
 
 
