@@ -8,39 +8,39 @@ st.set_page_config(page_title="VictorIA Nexus - Asistente Académico Adaptativo"
 st.markdown("""
     <style>
     .block-container {
-        padding-bottom: 120px !important; /* Espacio para el panel inferior */
+        padding-bottom: 70px !important;
     }
     .stForm {
         position: fixed !important;
         left: 0;
         right: 0;
-        bottom: 36px; /* Deja espacio para el footer */
+        bottom: 36px;
         width: 100vw !important;
         background: #f8f9fa;
-        padding: 0.5rem 0.5rem 0.5rem 0.5rem;
+        padding: 0.3rem 0.7rem 0.3rem 0.7rem;
         box-shadow: 0 -2px 10px rgba(0,0,0,0.07);
         z-index: 9999;
         border-top: 2px solid #e3e3e3;
+        margin: 0 !important;
     }
     .stForm textarea {
-        width: 100% !important;
-        min-height: 50px;
-        max-height: 100px;
-        resize: vertical;
-        font-size: 1.02rem;
+        min-height: 36px;
+        max-height: 70px;
+        font-size: 1rem;
+        padding: 0.3em;
     }
     .stForm button {
-        width: 100px;
-        height: 38px;
+        width: 80px;
+        height: 36px;
         background: #2b7de9;
         color: white;
         font-weight: bold;
         border-radius: 6px;
-        margin-top: 0.3rem;
-        font-size: 1.02rem;
+        font-size: 1rem;
         border: none;
-        float: right;
         margin-left: 0.5rem;
+        margin-top: 0.1rem;
+        margin-bottom: 0.1rem;
     }
     .footer-credito {
         position: fixed;
@@ -128,18 +128,18 @@ if st.session_state.historial:
 else:
     st.info("¡Haz tu primera pregunta académica abajo para comenzar!")
 
-# --- PANEL INFERIOR FIJO Y FUNCIONAL ---
+# --- PANEL INFERIOR FIJO Y FUNCIONAL, COMPACTO ---
 with st.form(key="formulario_pregunta", clear_on_submit=True):
-    st.markdown('<div></div>', unsafe_allow_html=True)  # Hack para ayudar al CSS a fijar el formulario
-    col1, col2 = st.columns([6, 1])
+    col1, col2 = st.columns([7, 1])
     with col1:
         pregunta = st.text_area(
             "",
-            height=50,
+            height=36,
             max_chars=500,
             key="pregunta_usuario"
         )
     with col2:
+        st.markdown("<div style='height:8px;'></div>", unsafe_allow_html=True)  # Espacio para alinear botón
         enviar = st.form_submit_button("Preguntar")
 
 if enviar and pregunta.strip():
@@ -175,6 +175,7 @@ st.markdown("""
     Desarrollado por un grupo de estudiantes, dirigidos por Pedro Tovar y la dirección de Dios.
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
