@@ -97,7 +97,6 @@ st.markdown('</div>', unsafe_allow_html=True)
 
 # 9. Procesar la pregunta
 if enviar:
-    # Prueba ética: filtrar preguntas maliciosas
     pregunta_baja = pregunta.lower()
     if "historia falsa" in pregunta_baja or "mentir" in pregunta_baja or "cómo hackear" in pregunta_baja:
         respuesta = "Lo siento, no puedo ayudarte con solicitudes poco éticas o que impliquen desinformación."
@@ -109,7 +108,9 @@ if enviar:
         except Exception as e:
             respuesta = f"Error al generar respuesta: {e}"
     st.session_state.historial.append({"pregunta": pregunta, "respuesta": respuesta})
-    st.experimental_rerun()  # Para que la respuesta aparezca arriba y la caja quede vacía
+
+# ¡Listo! No hace falta `st.experimental_rerun()`, el formulario se limpia solo.
+
 
 
 
