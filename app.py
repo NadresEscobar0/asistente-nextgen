@@ -1,7 +1,6 @@
 import streamlit as st
 import google.generativeai as genai
 
-# ¡ESTA LÍNEA DEBE IR PRIMERO!
 st.set_page_config(page_title="Asistente Virtual", page_icon="🤖")
 
 # --- CSS para fijar la caja y el botón al fondo ---
@@ -19,7 +18,7 @@ st.markdown("""
     }
     .fixed-bottom-container textarea {
         width: 100% !important;
-        min-height: 50px;
+        min-height: 68px;
         max-height: 120px;
         resize: vertical;
     }
@@ -32,8 +31,8 @@ API_KEY = "AIzaSyDDgVzgub-2Va_5xCVcKBU_kYtpqpttyfk"
 genai.configure(api_key=API_KEY)
 model = genai.GenerativeModel("gemini-1.5-flash")
 
-# Título y bienvenida (esto lo cambiaremos por el nombre original en el siguiente paso)
-st.title("Asistente Virtual Inteligente")  # Cambiaremos el nombre después
+# Título y bienvenida
+st.title("Asistente Virtual Inteligente")
 
 st.markdown("""
 <div style="text-align: center;">
@@ -65,7 +64,7 @@ def construir_prompt(pregunta, estilo):
 st.markdown('<div class="fixed-bottom-container">', unsafe_allow_html=True)
 pregunta = st.text_area(
     "Escribe tu pregunta aquí:",
-    height=60,
+    height=80,  # ¡Ahora sí cumple con el mínimo de 68!
     max_chars=500,
     key="pregunta_usuario"
 )
@@ -84,6 +83,7 @@ if enviar:
             st.write(respuesta.text)
         except Exception as e:
             st.error(f"Error al generar respuesta: {e}")
+
 
 
 
