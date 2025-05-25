@@ -2,13 +2,16 @@ import streamlit as st
 import google.generativeai as genai
 import re
 
-# 1. Configuración de la página
+# Configuración de la página
 st.set_page_config(page_title="VictorIA Nexus - Asistente Académico Adaptativo", page_icon="🧠")
 
-# 2. CSS para panel inferior moderno
+# --- CSS para panel inferior realmente fijo y siempre visible ---
 st.markdown("""
     <style>
-    .bottom-panel {
+    .block-container {
+        padding-bottom: 200px !important; /* Espacio para el panel inferior */
+    }
+    .bottom-panel-fixed {
         position: fixed;
         left: 0;
         right: 0;
@@ -16,17 +19,17 @@ st.markdown("""
         background: #f8f9fa;
         padding: 1.2rem 1rem 1rem 1rem;
         box-shadow: 0 -2px 10px rgba(0,0,0,0.07);
-        z-index: 100;
+        z-index: 9999;
         border-top: 2px solid #e3e3e3;
     }
-    .bottom-panel textarea {
+    .bottom-panel-fixed textarea {
         width: 100% !important;
         min-height: 70px;
         max-height: 150px;
         resize: vertical;
         font-size: 1.08rem;
     }
-    .stButton button {
+    .bottom-panel-fixed .stButton button {
         width: 100%;
         background: #2b7de9;
         color: white;
@@ -38,14 +41,13 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 3. API Key de Google Cloud para Gemini
+# API Key y modelo
 API_KEY = "AIzaSyDDgVzgub-2Va_5xCVcKBU_kYtpqpttyfk"
 genai.configure(api_key=API_KEY)
 model = genai.GenerativeModel("gemini-1.5-flash")
 
-# 4. Título y bienvenida profesional y profunda
+# Título y bienvenida profesional y profunda
 st.title("VictorIA Nexus: Asistente Académico Adaptativo")
-
 st.markdown("""
 <div style="text-align: center; margin-bottom: 2.5rem;">
     <b>
@@ -58,17 +60,16 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# 5. Selección de estilo de aprendizaje
+# Selección de estilo de aprendizaje
 estilo = st.selectbox(
     "¿Cuál es tu estilo de aprendizaje preferido?",
     ("Visual", "Auditivo", "Kinestésico")
 )
 
-# 6. Inicializar historial en sesión
+# Inicializar historial en sesión
 if "historial" not in st.session_state:
     st.session_state.historial = []
 
-# 7. Prompt profesional y adaptativo, con respuestas y explicaciones extensas
 def construir_prompt(pregunta, estilo):
     base = (
         "Eres VictorIA Nexus, una asistente académica ética, creativa y adaptativa. "
@@ -87,13 +88,11 @@ def construir_prompt(pregunta, estilo):
         detalle = "Después de la respuesta, sugiere actividades prácticas, ejemplos kinestésicos, ejercicios paso a paso y propuestas que impliquen acción física. No expliques otros estilos."
     return f"{base} Estilo de aprendizaje: {estilo}. {detalle} Pregunta: {pregunta}"
 
-# 8. Función para limpiar etiquetas HTML no deseadas (como </div>)
 def limpiar_html(texto):
-    # Elimina cualquier </div> o <div> suelto y otros tags HTML simples
     texto_limpio = re.sub(r'</?div[^>]*>', '', texto)
     return texto_limpio.strip()
 
-# 9. Historial visual profesional y contrastante
+# Historial visual profesional y contrastante
 if st.session_state.historial:
     st.markdown("### Historial de Interacciones")
     for i, entrada in enumerate(st.session_state.historial[::-1], 1):
@@ -112,8 +111,18 @@ if st.session_state.historial:
 else:
     st.info("¡Haz tu primera pregunta académica abajo para comenzar!")
 
-# 10. Panel inferior fijo para preguntar
-st.markdown('<div class="bottom-panel">', unsafe_allow_html=True)
+# --- PANEL INFERIOR FIJO, SIEMPRE VISIBLE ---
+# Usamos un formulario HTML personalizado para garantizar el foco y el seguimiento
+st.markdown("""
+<div class="bottom-panel-fixed">
+    <form action="" method="post">
+        <textarea name="pregunta" id="pregunta" placeholder="Haz tu pregunta académica aquí..." style="width:100%; min-height:70px; max-height:150px; font-size:1.08rem; border-radius:6px; border:1px solid #ccc; padding:0.5em;"></textarea>
+        <button type="submit" style="width:100%; background:#2b7de9; color:white; font-weight:bold; border-radius:6px; margin-top:0.5rem; font-size:1.08rem; border:none; padding:0.7em;">Preguntar</button>
+    </form>
+</div>
+""", unsafe_allow_html=True)
+
+# --- Captura la pregunta usando st.form para compatibilidad con Streamlit ---
 with st.form(key="formulario_pregunta", clear_on_submit=True):
     pregunta = st.text_area(
         "Haz tu pregunta académica aquí:",
@@ -122,9 +131,7 @@ with st.form(key="formulario_pregunta", clear_on_submit=True):
         key="pregunta_usuario"
     )
     enviar = st.form_submit_button("Preguntar")
-st.markdown('</div>', unsafe_allow_html=True)
 
-# 11. Procesar la pregunta y mostrar la respuesta inmediatamente, sin errores de cierre HTML
 if enviar and pregunta.strip():
     pregunta_baja = pregunta.lower()
     if "historia falsa" in pregunta_baja or "mentir" in pregunta_baja or "cómo hackear" in pregunta_baja:
@@ -138,7 +145,6 @@ if enviar and pregunta.strip():
             respuesta = f"Error al generar respuesta: {e}"
     respuesta_limpia = limpiar_html(respuesta)
     st.session_state.historial.append({"pregunta": pregunta, "respuesta": respuesta_limpia})
-    # Mostrar la respuesta inmediatamente arriba del formulario (sin </div> suelto)
     st.markdown(f"""
     <div style="
         background-color:#1b4a7a;
@@ -153,7 +159,6 @@ if enviar and pregunta.strip():
 elif enviar:
     st.warning("Por favor, escribe una pregunta antes de continuar.")
 
-# ¡Listo! Nombre, bienvenida, historial, respuesta priorizada y explicación adaptada, todo profesional, extenso y pulido.
 
 
 
