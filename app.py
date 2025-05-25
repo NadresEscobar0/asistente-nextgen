@@ -5,31 +5,32 @@ import re
 # Configuración de la página
 st.set_page_config(page_title="VictorIA Nexus - Asistente Académico Adaptativo", page_icon="🧠")
 
-# --- CSS para panel inferior realmente fijo y siempre visible ---
+# --- CSS para fijar el formulario de Streamlit realmente abajo ---
 st.markdown("""
     <style>
     .block-container {
-        padding-bottom: 200px !important; /* Espacio para el panel inferior */
+        padding-bottom: 180px !important; /* Espacio para el panel inferior */
     }
-    .bottom-panel-fixed {
-        position: fixed;
+    .stForm {
+        position: fixed !important;
         left: 0;
         right: 0;
         bottom: 0;
+        width: 100vw !important;
         background: #f8f9fa;
         padding: 1.2rem 1rem 1rem 1rem;
         box-shadow: 0 -2px 10px rgba(0,0,0,0.07);
         z-index: 9999;
         border-top: 2px solid #e3e3e3;
     }
-    .bottom-panel-fixed textarea {
+    .stForm textarea {
         width: 100% !important;
         min-height: 70px;
         max-height: 150px;
         resize: vertical;
         font-size: 1.08rem;
     }
-    .bottom-panel-fixed .stButton button {
+    .stForm button {
         width: 100%;
         background: #2b7de9;
         color: white;
@@ -111,19 +112,9 @@ if st.session_state.historial:
 else:
     st.info("¡Haz tu primera pregunta académica abajo para comenzar!")
 
-# --- PANEL INFERIOR FIJO, SIEMPRE VISIBLE ---
-# Usamos un formulario HTML personalizado para garantizar el foco y el seguimiento
-st.markdown("""
-<div class="bottom-panel-fixed">
-    <form action="" method="post">
-        <textarea name="pregunta" id="pregunta" placeholder="Haz tu pregunta académica aquí..." style="width:100%; min-height:70px; max-height:150px; font-size:1.08rem; border-radius:6px; border:1px solid #ccc; padding:0.5em;"></textarea>
-        <button type="submit" style="width:100%; background:#2b7de9; color:white; font-weight:bold; border-radius:6px; margin-top:0.5rem; font-size:1.08rem; border:none; padding:0.7em;">Preguntar</button>
-    </form>
-</div>
-""", unsafe_allow_html=True)
-
-# --- Captura la pregunta usando st.form para compatibilidad con Streamlit ---
+# --- PANEL INFERIOR FIJO Y FUNCIONAL ---
 with st.form(key="formulario_pregunta", clear_on_submit=True):
+    st.markdown('<div></div>', unsafe_allow_html=True)  # Hack para ayudar al CSS a fijar el formulario
     pregunta = st.text_area(
         "Haz tu pregunta académica aquí:",
         height=80,
@@ -158,6 +149,7 @@ if enviar and pregunta.strip():
     """, unsafe_allow_html=True)
 elif enviar:
     st.warning("Por favor, escribe una pregunta antes de continuar.")
+
 
 
 
