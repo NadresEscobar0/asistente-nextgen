@@ -59,7 +59,7 @@ estilo = st.selectbox(
     ("Visual", "Auditivo", "Kinestésico")
 )
 
-# 6. Mostrar respuestas arriba, caja y botón siempre abajo
+# 6. Inicializar historial en sesión
 if "historial" not in st.session_state:
     st.session_state.historial = []
 
@@ -77,11 +77,18 @@ def construir_prompt(pregunta, estilo):
         detalle = "Sugiere actividades prácticas y ejemplos kinestésicos."
     return f"{base} {detalle} Pregunta: {pregunta}"
 
-# 7. Mostrar historial de preguntas y respuestas (no chat, solo registro)
-st.markdown("### Historial de Interacciones")
-for entrada in st.session_state.historial[::-1]:
-    st.markdown(f"**Tú:** {entrada['pregunta']}")
-    st.markdown(f"**MentorIA:** {entrada['respuesta']}")
+# 7. Historial organizado y visualmente limpio
+if st.session_state.historial:
+    st.markdown("### Historial de Interacciones")
+    for i, entrada in enumerate(st.session_state.historial[::-1], 1):
+        st.markdown(f"""
+        <div style="background-color:#f0f4fa; border-radius:10px; padding:1em; margin-bottom:0.5em;">
+            <b><span style="color:#2b7de9;">{i}. Tú:</span></b> {entrada['pregunta']}<br>
+            <b><span style="color:#1b4a7a;">MentorIA:</span></b> {entrada['respuesta']}
+        </div>
+        """, unsafe_allow_html=True)
+else:
+    st.info("¡Haz tu primera pregunta académica abajo para comenzar!")
 
 # 8. Panel inferior fijo para preguntar
 st.markdown('<div class="bottom-panel">', unsafe_allow_html=True)
@@ -109,7 +116,7 @@ if enviar:
             respuesta = f"Error al generar respuesta: {e}"
     st.session_state.historial.append({"pregunta": pregunta, "respuesta": respuesta})
 
-# ¡Listo! No hace falta `st.experimental_rerun()`, el formulario se limpia solo.
+# ¡Listo! El historial está organizado y la experiencia es de asistente académico.
 
 
 
