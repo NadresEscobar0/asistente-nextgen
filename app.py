@@ -8,9 +8,9 @@ st.set_page_config(page_title="VictorIA Nexus - Asistente Académico Adaptativo"
 st.markdown("""
     <style>
     .block-container {
-        padding-bottom: 80px !important; /* Espacio para el panel inferior */
+        padding-bottom: 90px !important; /* Espacio para el panel inferior y créditos */
     }
-    .fixed-form-container {
+    .fixed-bottom-bar {
         position: fixed;
         left: 0;
         right: 0;
@@ -19,7 +19,35 @@ st.markdown("""
         border-top: 2px solid #e3e3e3;
         box-shadow: 0 -2px 10px rgba(0,0,0,0.07);
         z-index: 9999;
-        padding: 0.2em 0.7em 0.2em 0.7em;
+        padding: 0.3em 0.7em 0.3em 0.7em;
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+    }
+    .fixed-bottom-bar input[type="text"] {
+        flex: 1;
+        min-width: 0;
+        border-radius: 6px;
+        border: 1px solid #b3c2d1;
+        font-size: 1.02rem;
+        padding: 0.4em 0.6em;
+        background: #fff;
+        outline: none;
+    }
+    .fixed-bottom-bar button {
+        width: 90px;
+        height: 36px;
+        background: #2b7de9;
+        color: white;
+        font-weight: bold;
+        border-radius: 6px;
+        font-size: 1rem;
+        border: none;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .fixed-bottom-bar button:hover {
+        background: #1b4a7a;
     }
     .footer-credito {
         position: fixed;
@@ -42,7 +70,6 @@ API_KEY = "AIzaSyDDgVzgub-2Va_5xCVcKBU_kYtpqpttyfk"
 genai.configure(api_key=API_KEY)
 model = genai.GenerativeModel("gemini-1.5-flash")
 
-# Título y bienvenida profesional y profunda
 st.title("VictorIA Nexus: Asistente Académico Adaptativo")
 st.markdown("""
 <div style="text-align: center; margin-bottom: 2.5rem;">
@@ -56,13 +83,11 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Selección de estilo de aprendizaje
 estilo = st.selectbox(
     "¿Cuál es tu estilo de aprendizaje preferido?",
     ("Visual", "Auditivo", "Kinestésico")
 )
 
-# Inicializar historial en sesión
 if "historial" not in st.session_state:
     st.session_state.historial = []
 
@@ -88,7 +113,6 @@ def limpiar_html(texto):
     texto_limpio = re.sub(r'</?div[^>]*>', '', texto)
     return texto_limpio.strip()
 
-# Historial visual profesional y contrastante
 if st.session_state.historial:
     st.markdown("### Historial de Interacciones")
     for i, entrada in enumerate(st.session_state.historial[::-1], 1):
@@ -108,18 +132,26 @@ else:
     st.info("¡Haz tu primera pregunta académica abajo para comenzar!")
 
 # --- PANEL INFERIOR FIJO Y FUNCIONAL, ULTRA-COMPACTO ---
-st.markdown('<div class="fixed-form-container">', unsafe_allow_html=True)
+import streamlit.components.v1 as components
+
+# Usamos un formulario HTML personalizado para máxima compacidad y compatibilidad visual
+components.html(f"""
+<div class="fixed-bottom-bar">
+    <form method="POST" id="pregunta-form" autocomplete="off">
+        <input type="text" id="pregunta-input" name="pregunta" maxlength="500" placeholder="Haz tu pregunta académica aquí..." autofocus required style="flex:1;">
+        <button type="submit">Preguntar</button>
+    </form>
+</div>
+""", height=60)
+
+# Captura de la pregunta usando Streamlit (por compatibilidad y seguridad)
 with st.form(key="formulario_pregunta", clear_on_submit=True):
-    col1, col2 = st.columns([8, 1])
-    with col1:
-        pregunta = st.text_input(
-            "Haz tu pregunta académica aquí:",
-            max_chars=500,
-            key="pregunta_usuario"
-        )
-    with col2:
-        enviar = st.form_submit_button("Preguntar")
-st.markdown('</div>', unsafe_allow_html=True)
+    pregunta = st.text_input(
+        "",
+        max_chars=500,
+        key="pregunta_usuario"
+    )
+    enviar = st.form_submit_button("Preguntar")
 
 if enviar and pregunta.strip():
     pregunta_baja = pregunta.lower()
@@ -154,6 +186,7 @@ st.markdown("""
     Desarrollado por un grupo de estudiantes, dirigidos por Pedro Tovar y la dirección de Dios.
 </div>
 """, unsafe_allow_html=True)
+
 
 
 
