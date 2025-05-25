@@ -4,17 +4,17 @@ import re
 
 st.set_page_config(page_title="VictorIA Nexus - Asistente Académico Adaptativo", page_icon="🧠")
 
-# --- CSS para panel inferior compacto y footer ---
+# --- CSS para panel inferior compacto y fijo ---
 st.markdown("""
     <style>
     .block-container {
-        padding-bottom: 90px !important; /* Espacio para el panel inferior y créditos */
+        padding-bottom: 65px !important; /* Espacio para el panel inferior */
     }
-    .fixed-bottom-bar {
+    #fixed-bottom-bar {
         position: fixed;
         left: 0;
         right: 0;
-        bottom: 36px;
+        bottom: 0;
         background: #f8f9fa;
         border-top: 2px solid #e3e3e3;
         box-shadow: 0 -2px 10px rgba(0,0,0,0.07);
@@ -24,7 +24,7 @@ st.markdown("""
         align-items: center;
         gap: 0.5em;
     }
-    .fixed-bottom-bar input[type="text"] {
+    #fixed-bottom-bar input[type="text"] {
         flex: 1;
         min-width: 0;
         border-radius: 6px;
@@ -34,7 +34,7 @@ st.markdown("""
         background: #fff;
         outline: none;
     }
-    .fixed-bottom-bar button {
+    #fixed-bottom-bar button {
         width: 90px;
         height: 36px;
         background: #2b7de9;
@@ -46,21 +46,8 @@ st.markdown("""
         cursor: pointer;
         transition: background 0.2s;
     }
-    .fixed-bottom-bar button:hover {
+    #fixed-bottom-bar button:hover {
         background: #1b4a7a;
-    }
-    .footer-credito {
-        position: fixed;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: #1b4a7a;
-        color: #fff;
-        text-align: center;
-        padding: 0.4em 0.2em 0.4em 0.2em;
-        font-size: 0.98rem;
-        z-index: 10000;
-        letter-spacing: 0.5px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -134,26 +121,43 @@ else:
 # --- PANEL INFERIOR FIJO Y FUNCIONAL, ULTRA-COMPACTO ---
 import streamlit.components.v1 as components
 
-# Usamos un formulario HTML personalizado para máxima compacidad y compatibilidad visual
-components.html(f"""
-<div class="fixed-bottom-bar">
-    <form method="POST" id="pregunta-form" autocomplete="off">
-        <input type="text" id="pregunta-input" name="pregunta" maxlength="500" placeholder="Haz tu pregunta académica aquí..." autofocus required style="flex:1;">
+# HTML para el panel fijo con botón y caja de texto, SIEMPRE visible y compacto
+components.html("""
+<div id="fixed-bottom-bar">
+    <form id="pregunta-form" autocomplete="off">
+        <input type="text" id="pregunta-input" maxlength="500" placeholder="Haz tu pregunta académica aquí..." autofocus required />
         <button type="submit">Preguntar</button>
     </form>
 </div>
-""", height=60)
+<script>
+const form = document.getElementById('pregunta-form');
+const input = document.getElementById('pregunta-input');
+form.onsubmit = function(e){
+    e.preventDefault();
+    if(input.value.trim().length > 0){
+        window.parent.postMessage({type: 'streamlit:setComponentValue', value: input.value}, '*');
+        input.value = '';
+    }
+};
+</script>
+""", height=60, key="fixed_panel")
 
-# Captura de la pregunta usando Streamlit (por compatibilidad y seguridad)
-with st.form(key="formulario_pregunta", clear_on_submit=True):
-    pregunta = st.text_input(
-        "",
-        max_chars=500,
-        key="pregunta_usuario"
-    )
-    enviar = st.form_submit_button("Preguntar")
+# Captura la pregunta desde el componente HTML (solo si el usuario usa el panel fijo)
+if 'pregunta_usuario' not in st.session_state:
+    st.session_state.pregunta_usuario = ""
 
-if enviar and pregunta.strip():
+import streamlit_js_eval
+user_input = streamlit_js_eval.get_streamlit_js_eval_result("window.parent.lastUserInput")
+if user_input and isinstance(user_input, str) and user_input.strip():
+    pregunta = user_input.strip()
+    enviar = True
+else:
+    # Fallback para usuarios que usen solo el formulario Streamlit (en caso de error)
+    with st.form(key="formulario_pregunta", clear_on_submit=True):
+        pregunta = st.text_input("", max_chars=500, key="pregunta_usuario")
+        enviar = st.form_submit_button("Preguntar")
+
+if 'enviar' in locals() and enviar and pregunta.strip():
     pregunta_baja = pregunta.lower()
     if "historia falsa" in pregunta_baja or "mentir" in pregunta_baja or "cómo hackear" in pregunta_baja:
         respuesta = "Lo siento, no puedo ayudarte con solicitudes poco éticas o que impliquen desinformación."
@@ -177,15 +181,9 @@ if enviar and pregunta.strip():
         <b><span style="color:#87CEEB;">VictorIA Nexus:</span></b> {respuesta_limpia}
     </div>
     """, unsafe_allow_html=True)
-elif enviar:
+elif 'enviar' in locals() and enviar:
     st.warning("Por favor, escribe una pregunta antes de continuar.")
 
-# --- FOOTER DE CRÉDITO ---
-st.markdown("""
-<div class="footer-credito">
-    Desarrollado por un grupo de estudiantes, dirigidos por Pedro Tovar y la dirección de Dios.
-</div>
-""", unsafe_allow_html=True)
 
 
 
