@@ -1,6 +1,9 @@
 import streamlit as st
 import google.generativeai as genai
 
+# ¡ESTA LÍNEA DEBE IR PRIMERO!
+st.set_page_config(page_title="Asistente Virtual", page_icon="🤖")
+
 # --- CSS para fijar la caja y el botón al fondo ---
 st.markdown("""
     <style>
@@ -22,9 +25,6 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
-
-# Configuración de la página
-st.set_page_config(page_title="Asistente Virtual", page_icon="🤖")
 
 # Tu API Key de Google Cloud para Gemini
 API_KEY = "AIzaSyDDgVzgub-2Va_5xCVcKBU_kYtpqpttyfk"
@@ -84,6 +84,7 @@ if enviar:
             st.write(respuesta.text)
         except Exception as e:
             st.error(f"Error al generar respuesta: {e}")
+
 
 
 
