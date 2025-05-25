@@ -2,7 +2,7 @@ import streamlit as st
 import google.generativeai as genai
 
 # 1. Configuración de la página
-st.set_page_config(page_title="VictorIA Next - Asistente Académico", page_icon="🧠")
+st.set_page_config(page_title="VictorIA Nexus - Asistente Académico Adaptativo", page_icon="🧠")
 
 # 2. CSS para panel inferior moderno
 st.markdown("""
@@ -42,14 +42,18 @@ API_KEY = "AIzaSyDDgVzgub-2Va_5xCVcKBU_kYtpqpttyfk"
 genai.configure(api_key=API_KEY)
 model = genai.GenerativeModel("gemini-1.5-flash")
 
-# 4. Título y bienvenida
-st.title("VictoRIA Next: Tu Asistente Académico Next-Gen")
+# 4. Título y bienvenida profesional
+st.title("VictorIA Nexus: Asistente Académico Adaptativo")
+
 st.markdown("""
 <div style="text-align: center; margin-bottom: 2.5rem;">
-    <b>¡Bienvenido a <span style='color: #2b7de9;'>VictoRIA Next</span>!<br>
-    Tu guía personalizada para aprender, razonar y crear.<br>
-    Elige tu estilo de aprendizaje y pregunta lo que quieras.<br>
-    <span style='color: #2b7de9;'>VictoRIA Next te ayudará a descubrir, no solo a responder.</span></b>
+    <b>
+    <span style='font-size:1.3em; color:#2b7de9;'>¡Bienvenido a VictorIA Nexus!</span><br><br>
+    Mucho más que un asistente: VictorIA Nexus es el puente entre tu curiosidad y el conocimiento.<br><br>
+    Esta plataforma de inteligencia artificial adaptativa no solo responde preguntas, sino que te guía en la exploración creativa de soluciones, personalizando cada interacción según tu estilo de aprendizaje.<br><br>
+    Inspirada en el poder de la tecnología y la pedagogía, VictorIA Nexus fomenta el razonamiento crítico, la autonomía y la innovación académica. Aquí, cada consulta es una oportunidad para descubrir, reflexionar y crecer.<br><br>
+    <span style='color: #2b7de9;'>Elige tu estilo de aprendizaje, plantea tu reto académico y deja que VictorIA Nexus te acompañe en el viaje de transformar dudas en descubrimientos.</span>
+    </b>
 </div>
 """, unsafe_allow_html=True)
 
@@ -63,21 +67,22 @@ estilo = st.selectbox(
 if "historial" not in st.session_state:
     st.session_state.historial = []
 
-# 7. Función para construir el prompt adaptado
+# 7. Prompt profesional y adaptativo
 def construir_prompt(pregunta, estilo):
     base = (
-        "Eres VictoRIA Next, una asistente académica ética, creativa y adaptativa. "
-        "Responde la siguiente pregunta de forma clara, concreta y adaptada exclusivamente al estilo de aprendizaje indicado."
+        "Eres VictorIA Nexus, una asistente académica ética, creativa y adaptativa. "
+        "Prioriza siempre responder de forma clara y concreta a la pregunta planteada. "
+        "Después de la respuesta, añade una explicación creativa adaptada únicamente al estilo de aprendizaje indicado."
     )
     if estilo == "Visual":
-        detalle = "Utiliza analogías visuales, descripciones gráficas, diagramas mentales o ejemplos visuales. No expliques otros estilos."
+        detalle = "Después de la respuesta, utiliza analogías visuales, descripciones gráficas, esquemas mentales o ejemplos visuales. No expliques otros estilos."
     elif estilo == "Auditivo":
-        detalle = "Utiliza ejemplos auditivos, relatos, metáforas sonoras o explicaciones habladas. No expliques otros estilos."
+        detalle = "Después de la respuesta, utiliza ejemplos auditivos, relatos, metáforas sonoras o explicaciones habladas. No expliques otros estilos."
     else:
-        detalle = "Sugiere actividades prácticas, ejemplos kinestésicos y pasos que impliquen acción física. No expliques otros estilos."
+        detalle = "Después de la respuesta, sugiere actividades prácticas, ejemplos kinestésicos y pasos que impliquen acción física. No expliques otros estilos."
     return f"{base} Estilo de aprendizaje: {estilo}. {detalle} Pregunta: {pregunta}"
 
-# 8. Mostrar historial organizado y visualmente limpio, con alto contraste
+# 8. Historial visual profesional y contrastante
 if st.session_state.historial:
     st.markdown("### Historial de Interacciones")
     for i, entrada in enumerate(st.session_state.historial[::-1], 1):
@@ -90,7 +95,7 @@ if st.session_state.historial:
             color:#ffffff;
             ">
             <b><span style="color:#FFD700;">{i}. Tú:</span></b> {entrada['pregunta']}<br>
-            <b><span style="color:#87CEEB;">VictoRIA Next:</span></b> {entrada['respuesta']}
+            <b><span style="color:#87CEEB;">VictorIA Nexus:</span></b> {entrada['respuesta']}
         </div>
         """, unsafe_allow_html=True)
 else:
@@ -130,13 +135,14 @@ if enviar and pregunta.strip():
         margin-bottom:0.5em;
         color:#ffffff;">
         <b><span style="color:#FFD700;">Tú:</span></b> {pregunta}<br>
-        <b><span style="color:#87CEEB;">VictoRIA Next:</span></b> {respuesta}
+        <b><span style="color:#87CEEB;">VictorIA Nexus:</span></b> {respuesta}
     </div>
     """, unsafe_allow_html=True)
 elif enviar:
     st.warning("Por favor, escribe una pregunta antes de continuar.")
 
-# ¡Listo! Nombre original, historial visual, respuesta inmediata y adaptación real al estilo de aprendizaje.
+# ¡Listo! Nombre original, bienvenida profesional, historial visual, respuesta inmediata y adaptación real al estilo de aprendizaje.
+
 
 
 
