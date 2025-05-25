@@ -2,42 +2,58 @@ import streamlit as st
 import google.generativeai as genai
 import re
 
-# Configuración de la página
 st.set_page_config(page_title="VictorIA Nexus - Asistente Académico Adaptativo", page_icon="🧠")
 
-# --- CSS para fijar el formulario de Streamlit realmente abajo ---
+# --- CSS para panel inferior compacto y footer ---
 st.markdown("""
     <style>
     .block-container {
-        padding-bottom: 180px !important; /* Espacio para el panel inferior */
+        padding-bottom: 120px !important; /* Espacio para el panel inferior */
     }
     .stForm {
         position: fixed !important;
         left: 0;
         right: 0;
-        bottom: 0;
+        bottom: 36px; /* Deja espacio para el footer */
         width: 100vw !important;
         background: #f8f9fa;
-        padding: 1.2rem 1rem 1rem 1rem;
+        padding: 0.5rem 0.5rem 0.5rem 0.5rem;
         box-shadow: 0 -2px 10px rgba(0,0,0,0.07);
         z-index: 9999;
         border-top: 2px solid #e3e3e3;
     }
     .stForm textarea {
         width: 100% !important;
-        min-height: 70px;
-        max-height: 150px;
+        min-height: 50px;
+        max-height: 100px;
         resize: vertical;
-        font-size: 1.08rem;
+        font-size: 1.02rem;
     }
     .stForm button {
-        width: 100%;
+        width: 100px;
+        height: 38px;
         background: #2b7de9;
         color: white;
         font-weight: bold;
         border-radius: 6px;
-        margin-top: 0.5rem;
-        font-size: 1.08rem;
+        margin-top: 0.3rem;
+        font-size: 1.02rem;
+        border: none;
+        float: right;
+        margin-left: 0.5rem;
+    }
+    .footer-credito {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #1b4a7a;
+        color: #fff;
+        text-align: center;
+        padding: 0.4em 0.2em 0.4em 0.2em;
+        font-size: 0.98rem;
+        z-index: 10000;
+        letter-spacing: 0.5px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -115,13 +131,16 @@ else:
 # --- PANEL INFERIOR FIJO Y FUNCIONAL ---
 with st.form(key="formulario_pregunta", clear_on_submit=True):
     st.markdown('<div></div>', unsafe_allow_html=True)  # Hack para ayudar al CSS a fijar el formulario
-    pregunta = st.text_area(
-        "Haz tu pregunta académica aquí:",
-        height=80,
-        max_chars=500,
-        key="pregunta_usuario"
-    )
-    enviar = st.form_submit_button("Preguntar")
+    col1, col2 = st.columns([6, 1])
+    with col1:
+        pregunta = st.text_area(
+            "",
+            height=50,
+            max_chars=500,
+            key="pregunta_usuario"
+        )
+    with col2:
+        enviar = st.form_submit_button("Preguntar")
 
 if enviar and pregunta.strip():
     pregunta_baja = pregunta.lower()
@@ -149,6 +168,14 @@ if enviar and pregunta.strip():
     """, unsafe_allow_html=True)
 elif enviar:
     st.warning("Por favor, escribe una pregunta antes de continuar.")
+
+# --- FOOTER DE CRÉDITO ---
+st.markdown("""
+<div class="footer-credito">
+    Desarrollado por un grupo de estudiantes, dirigidos por Pedro Tovar y la dirección de Dios.
+</div>
+""", unsafe_allow_html=True)
+
 
 
 
