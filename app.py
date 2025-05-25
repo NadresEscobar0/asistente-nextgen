@@ -1,5 +1,6 @@
 import streamlit as st
 import google.generativeai as genai
+import re
 
 # 1. Configuración de la página
 st.set_page_config(page_title="VictorIA Nexus - Asistente Académico Adaptativo", page_icon="🧠")
@@ -42,7 +43,7 @@ API_KEY = "AIzaSyDDgVzgub-2Va_5xCVcKBU_kYtpqpttyfk"
 genai.configure(api_key=API_KEY)
 model = genai.GenerativeModel("gemini-1.5-flash")
 
-# 4. Título y bienvenida profesional
+# 4. Título y bienvenida profesional y profunda
 st.title("VictorIA Nexus: Asistente Académico Adaptativo")
 
 st.markdown("""
@@ -50,9 +51,9 @@ st.markdown("""
     <b>
     <span style='font-size:1.3em; color:#2b7de9;'>¡Bienvenido a VictorIA Nexus!</span><br><br>
     Mucho más que un asistente: VictorIA Nexus es el puente entre tu curiosidad y el conocimiento.<br><br>
-    Esta plataforma de inteligencia artificial adaptativa no solo responde preguntas, sino que te guía en la exploración creativa de soluciones, personalizando cada interacción según tu estilo de aprendizaje.<br><br>
-    Inspirada en el poder de la tecnología y la pedagogía, VictorIA Nexus fomenta el razonamiento crítico, la autonomía y la innovación académica. Aquí, cada consulta es una oportunidad para descubrir, reflexionar y crecer.<br><br>
-    <span style='color: #2b7de9;'>Elige tu estilo de aprendizaje, plantea tu reto académico y deja que VictorIA Nexus te acompañe en el viaje de transformar dudas en descubrimientos.</span>
+    Esta plataforma de inteligencia artificial adaptativa no solo responde preguntas, sino que guía, inspira y personaliza cada interacción según tu estilo de aprendizaje.<br><br>
+    Inspirada en la pedagogía y la tecnología, VictorIA Nexus fomenta el pensamiento crítico, la creatividad y la autonomía. Aquí, cada consulta es una oportunidad para descubrir, reflexionar y crecer.<br><br>
+    <span style='color: #2b7de9;'>Elige tu estilo de aprendizaje, plantea tu reto académico y deja que VictorIA Nexus te acompañe en el viaje de transformar dudas en descubrimientos. No solo obtendrás respuestas, sino caminos para aprender y crear.</span>
     </b>
 </div>
 """, unsafe_allow_html=True)
@@ -67,41 +68,51 @@ estilo = st.selectbox(
 if "historial" not in st.session_state:
     st.session_state.historial = []
 
-# 7. Prompt profesional y adaptativo
+# 7. Prompt profesional y adaptativo, con respuestas y explicaciones extensas
 def construir_prompt(pregunta, estilo):
     base = (
         "Eres VictorIA Nexus, una asistente académica ética, creativa y adaptativa. "
-        "Prioriza siempre responder de forma clara y concreta a la pregunta planteada. "
-        "Después de la respuesta, añade una explicación creativa adaptada únicamente al estilo de aprendizaje indicado."
+        "Prioriza siempre responder de forma clara, extensa y concreta a la pregunta planteada, "
+        "proporcionando una explicación detallada, profunda y bien desarrollada, con ejemplos y contexto para que cualquier estudiante pueda comprender a fondo el tema. "
+        "No seas breve ni superficial. "
+        "Después de la respuesta, añade una explicación creativa, extensa y adaptada únicamente al estilo de aprendizaje indicado, "
+        "con el objetivo de fomentar el aprendizaje real, la creatividad y el pensamiento crítico. "
+        "Desarrolla la explicación y utiliza recursos propios del estilo elegido."
     )
     if estilo == "Visual":
-        detalle = "Después de la respuesta, utiliza analogías visuales, descripciones gráficas, esquemas mentales o ejemplos visuales. No expliques otros estilos."
+        detalle = "Después de la respuesta, utiliza analogías visuales, descripciones gráficas, esquemas mentales, mapas conceptuales o ejemplos visuales. No expliques otros estilos."
     elif estilo == "Auditivo":
-        detalle = "Después de la respuesta, utiliza ejemplos auditivos, relatos, metáforas sonoras o explicaciones habladas. No expliques otros estilos."
+        detalle = "Después de la respuesta, utiliza ejemplos auditivos, relatos, metáforas sonoras, explicaciones habladas o historias narradas. No expliques otros estilos."
     else:
-        detalle = "Después de la respuesta, sugiere actividades prácticas, ejemplos kinestésicos y pasos que impliquen acción física. No expliques otros estilos."
+        detalle = "Después de la respuesta, sugiere actividades prácticas, ejemplos kinestésicos, ejercicios paso a paso y propuestas que impliquen acción física. No expliques otros estilos."
     return f"{base} Estilo de aprendizaje: {estilo}. {detalle} Pregunta: {pregunta}"
 
-# 8. Historial visual profesional y contrastante
+# 8. Función para limpiar etiquetas HTML no deseadas (como </div>)
+def limpiar_html(texto):
+    # Elimina cualquier </div> o <div> suelto y otros tags HTML simples
+    texto_limpio = re.sub(r'</?div[^>]*>', '', texto)
+    return texto_limpio.strip()
+
+# 9. Historial visual profesional y contrastante
 if st.session_state.historial:
     st.markdown("### Historial de Interacciones")
     for i, entrada in enumerate(st.session_state.historial[::-1], 1):
+        respuesta_limpia = limpiar_html(entrada['respuesta'])
         st.markdown(f"""
         <div style="
             background-color:#1b4a7a;
             border-radius:10px;
             padding:1em;
             margin-bottom:0.5em;
-            color:#ffffff;
-            ">
+            color:#ffffff;">
             <b><span style="color:#FFD700;">{i}. Tú:</span></b> {entrada['pregunta']}<br>
-            <b><span style="color:#87CEEB;">VictorIA Nexus:</span></b> {entrada['respuesta']}
+            <b><span style="color:#87CEEB;">VictorIA Nexus:</span></b> {respuesta_limpia}
         </div>
         """, unsafe_allow_html=True)
 else:
     st.info("¡Haz tu primera pregunta académica abajo para comenzar!")
 
-# 9. Panel inferior fijo para preguntar
+# 10. Panel inferior fijo para preguntar
 st.markdown('<div class="bottom-panel">', unsafe_allow_html=True)
 with st.form(key="formulario_pregunta", clear_on_submit=True):
     pregunta = st.text_area(
@@ -113,7 +124,7 @@ with st.form(key="formulario_pregunta", clear_on_submit=True):
     enviar = st.form_submit_button("Preguntar")
 st.markdown('</div>', unsafe_allow_html=True)
 
-# 10. Procesar la pregunta y mostrar la respuesta inmediatamente
+# 11. Procesar la pregunta y mostrar la respuesta inmediatamente, sin errores de cierre HTML
 if enviar and pregunta.strip():
     pregunta_baja = pregunta.lower()
     if "historia falsa" in pregunta_baja or "mentir" in pregunta_baja or "cómo hackear" in pregunta_baja:
@@ -125,8 +136,9 @@ if enviar and pregunta.strip():
             respuesta = respuesta.text
         except Exception as e:
             respuesta = f"Error al generar respuesta: {e}"
-    st.session_state.historial.append({"pregunta": pregunta, "respuesta": respuesta})
-    # Mostrar la respuesta inmediatamente arriba del formulario
+    respuesta_limpia = limpiar_html(respuesta)
+    st.session_state.historial.append({"pregunta": pregunta, "respuesta": respuesta_limpia})
+    # Mostrar la respuesta inmediatamente arriba del formulario (sin </div> suelto)
     st.markdown(f"""
     <div style="
         background-color:#1b4a7a;
@@ -135,13 +147,14 @@ if enviar and pregunta.strip():
         margin-bottom:0.5em;
         color:#ffffff;">
         <b><span style="color:#FFD700;">Tú:</span></b> {pregunta}<br>
-        <b><span style="color:#87CEEB;">VictorIA Nexus:</span></b> {respuesta}
+        <b><span style="color:#87CEEB;">VictorIA Nexus:</span></b> {respuesta_limpia}
     </div>
     """, unsafe_allow_html=True)
 elif enviar:
     st.warning("Por favor, escribe una pregunta antes de continuar.")
 
-# ¡Listo! Nombre original, bienvenida profesional, historial visual, respuesta inmediata y adaptación real al estilo de aprendizaje.
+# ¡Listo! Nombre, bienvenida, historial, respuesta priorizada y explicación adaptada, todo profesional, extenso y pulido.
+
 
 
 
