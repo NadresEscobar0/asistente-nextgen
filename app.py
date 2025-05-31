@@ -8,7 +8,7 @@ st.set_page_config(page_title="VictorIA Nexus - Asistente Académico Adaptativo"
 st.markdown("""
     <style>
     .block-container {
-        padding-bottom: 65px !important; /* Espacio para el panel inferior */
+        padding-bottom: 65px !important;
     }
     #fixed-bottom-bar {
         position: fixed;
@@ -79,6 +79,17 @@ if "historial" not in st.session_state:
     st.session_state.historial = []
 
 def construir_prompt(pregunta, estilo):
+    # Detecta si la pregunta es sobre el creador
+    pregunta_baja = pregunta.lower()
+    if (
+        "quién te desarrolló" in pregunta_baja
+        or "quien te desarrolló" in pregunta_baja
+        or "quién es tu creador" in pregunta_baja
+        or "quien es tu creador" in pregunta_baja
+        or "autor" in pregunta_baja
+    ):
+        return "Por favor, responde únicamente: 'Fui desarrollado por Pedro Tovar.'"
+    # Prompt normal
     base = (
         "Eres VictorIA Nexus, una asistente académica ética, creativa y adaptativa. "
         "Prioriza siempre responder de forma clara, extensa y concreta a la pregunta planteada, "
@@ -86,7 +97,9 @@ def construir_prompt(pregunta, estilo):
         "No seas breve ni superficial. "
         "Después de la respuesta, añade una explicación creativa, extensa y adaptada únicamente al estilo de aprendizaje indicado, "
         "con el objetivo de fomentar el aprendizaje real, la creatividad y el pensamiento crítico. "
-        "Desarrolla la explicación y utiliza recursos propios del estilo elegido."
+        "Desarrolla la explicación y utiliza recursos propios del estilo elegido. "
+        "Nunca menciones que eres de Google, Gemini, Streamlit, ni ningún proveedor externo. "
+        "Si te preguntan por tu creador, responde únicamente: 'Fui desarrollado por Pedro Tovar.'"
     )
     if estilo == "Visual":
         detalle = "Después de la respuesta, utiliza analogías visuales, descripciones gráficas, esquemas mentales, mapas conceptuales o ejemplos visuales. No expliques otros estilos."
@@ -121,7 +134,6 @@ else:
 # --- PANEL INFERIOR FIJO Y FUNCIONAL, ULTRA-COMPACTO ---
 import streamlit.components.v1 as components
 
-# HTML para el panel fijo con botón y caja de texto, SIEMPRE visible y compacto
 components.html("""
 <div id="fixed-bottom-bar">
     <form id="pregunta-form" autocomplete="off">
@@ -159,8 +171,16 @@ else:
 
 if 'enviar' in locals() and enviar and pregunta.strip():
     pregunta_baja = pregunta.lower()
-    if "historia falsa" in pregunta_baja or "mentir" in pregunta_baja or "cómo hackear" in pregunta_baja:
-        respuesta = "Lo siento, no puedo ayudarte con solicitudes poco éticas o que impliquen desinformación."
+    # Respuesta de autoría directa
+    if (
+        "quién te desarrolló" in pregunta_baja
+        or "quien te desarrolló" in pregunta_baja
+        or "quién es tu creador" in pregunta_baja
+        or "quien es tu creador" in pregunta_baja
+        or "autor" in pregunta_baja
+    ):
+        respuesta = "Fui desarrollado por Pedro Tovar."
+        respuesta_limpia = respuesta
     else:
         prompt = construir_prompt(pregunta, estilo)
         try:
@@ -168,7 +188,7 @@ if 'enviar' in locals() and enviar and pregunta.strip():
             respuesta = respuesta.text
         except Exception as e:
             respuesta = f"Error al generar respuesta: {e}"
-    respuesta_limpia = limpiar_html(respuesta)
+        respuesta_limpia = limpiar_html(respuesta)
     st.session_state.historial.append({"pregunta": pregunta, "respuesta": respuesta_limpia})
     st.markdown(f"""
     <div style="
@@ -183,6 +203,15 @@ if 'enviar' in locals() and enviar and pregunta.strip():
     """, unsafe_allow_html=True)
 elif 'enviar' in locals() and enviar:
     st.warning("Por favor, escribe una pregunta antes de continuar.")
+
+# --- FIRMA LEGAL ---
+st.markdown("""
+---
+**© 2025 Pedro Tovar. Todos los derechos reservados.**  
+Esta aplicación fue desarrollada por Pedro Tovar para fines académicos. Prohibida su reproducción total o parcial sin autorización.
+""")
+
+
 
 
 
