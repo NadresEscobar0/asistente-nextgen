@@ -1,6 +1,9 @@
 import streamlit as st
 import google.generativeai as genai
 import re
+import requests
+from io import BytesIO
+from PIL import Image
 
 st.set_page_config(page_title="VictorIA Nexus - Asistente Académico Adaptativo", page_icon="🧠")
 
@@ -57,7 +60,8 @@ API_KEY = "AIzaSyDDgVzgub-2Va_5xCVcKBU_kYtpqpttyfk"
 genai.configure(api_key=API_KEY)
 model = genai.GenerativeModel("gemini-1.5-flash")
 
-st.title("VictorIA Nexus: Asistente Académico Adaptativo")
+# Título con emojis
+st.title("VictorIA Nexus 🧠💪✝️")
 st.markdown("""
 <div style="text-align: center; margin-bottom: 2.5rem;">
     <b>
@@ -70,6 +74,31 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+# --- Generador de imágenes IA ---
+st.header("Generador de Imágenes por IA (Gratis)")
+prompt_img = st.text_input("Describe la imagen educativa que quieres generar:")
+
+if st.button("Generar imagen IA"):
+    if prompt_img.strip():
+        with st.spinner("Generando imagen..."):
+            url = "https://api.kieai.tech/v1/generate"
+            payload = {"prompt": prompt_img}
+            try:
+                response = requests.post(url, json=payload, timeout=60)
+                response.raise_for_status()
+                img_url = response.json().get("image_url")
+                if img_url:
+                    img_data = requests.get(img_url).content
+                    image = Image.open(BytesIO(img_data))
+                    st.image(image, caption="Imagen generada por IA", use_column_width=True)
+                else:
+                    st.warning("No se pudo generar la imagen. Intenta con otra descripción.")
+            except Exception as e:
+                st.error(f"Error al generar imagen: {e}")
+    else:
+        st.warning("Por favor, escribe una descripción para la imagen.")
+
+# --- Selección de estilo de aprendizaje ---
 estilo = st.selectbox(
     "¿Cuál es tu estilo de aprendizaje preferido?",
     ("Visual", "Auditivo", "Kinestésico")
@@ -79,7 +108,6 @@ if "historial" not in st.session_state:
     st.session_state.historial = []
 
 def construir_prompt(pregunta, estilo):
-    # Detecta si la pregunta es sobre el creador
     pregunta_baja = pregunta.lower()
     if (
         "quién te desarrolló" in pregunta_baja
@@ -89,7 +117,6 @@ def construir_prompt(pregunta, estilo):
         or "autor" in pregunta_baja
     ):
         return "Por favor, responde únicamente: 'Fui desarrollado por Pedro Tovar.'"
-    # Prompt normal
     base = (
         "Eres VictorIA Nexus, una asistente académica ética, creativa y adaptativa. "
         "Prioriza siempre responder de forma clara, extensa y concreta a la pregunta planteada, "
@@ -210,6 +237,7 @@ st.markdown("""
 **© 2025 Pedro Tovar. Todos los derechos reservados.**  
 Esta aplicación fue desarrollada por Pedro Tovar para fines académicos. Prohibida su reproducción total o parcial sin autorización.
 """)
+
 
 
 
